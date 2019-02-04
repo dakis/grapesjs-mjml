@@ -1,6 +1,6 @@
 // Specs: https://mjml.io/documentation/#mjml-column
 
-import { mjml2html } from 'mjml';
+import mjml2html from 'mjml4-in-browser';
 
 export default (editor, {
   dc, opt, defaultModel, defaultView, coreMjmlModel, coreMjmlView, sandboxEl
@@ -100,8 +100,8 @@ export default (editor, {
         let addColmn = Array(cols).fill('<mj-column></mj-column>').join('');
 
         return {
-          start: `<mjml><mj-body><mj-container>`,
-          end: `${addColmn}</mj-container></mj-body></mjml>`,
+          start: `<mjml><mj-body><mj-section>`,
+          end: `${addColmn}</mj-section/></mj-body></mjml>`,
         };
       },
 
