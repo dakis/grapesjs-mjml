@@ -86,4 +86,6 @@ export default grapesjs.plugins.add('gjs-mjml', (editor, opts = {}) => {
     dm.add('Mobile', '320px');
   }
 
+  console.info('mah code');
+
 });

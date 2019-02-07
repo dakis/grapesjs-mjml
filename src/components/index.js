@@ -170,6 +170,7 @@ export default (editor, opt = {}) => {
 
 
     getTemplateFromMjml() {
+      console.info('getTemplateFromMjml');
       let mjmlTmpl = this.getMjmlTemplate();
       let innerMjml = this.getInnerMjmlTemplate();
       const htmlOutput = mjml2html(`${mjmlTmpl.start}
