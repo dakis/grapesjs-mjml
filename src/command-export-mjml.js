@@ -87,7 +87,8 @@ export default (editor, opt = {}) => {
         htmlCode.setContent(mjml.html);
         //htmlCode.editor.setOption('lineWrapping', 1);
         htmlCode.editor.refresh();
-      
+      }
+      console.info(mjmlCode, mjml2html);
       sender.set && sender.set('active', 0);
     },
 
