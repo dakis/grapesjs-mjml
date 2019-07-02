@@ -34,9 +34,13 @@ export default (editor, {
 
       isComponent(el) {
         if (el.tagName == type.toUpperCase()) {
+          let content = el.innerHTML
+          if (/<%.*%>/.test(el.innerText)) {
+            content = el.innerText
+          }
           return {
             type,
-            content: el.innerHTML,
+            content,
             components: [],
           };
         }
