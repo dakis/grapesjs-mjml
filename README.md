@@ -1,6 +1,8 @@
 # GrapesJS MJML
 
-This plugin enables the usage of [MJML](https://mjml.io/) components inside the GrapesJS environment. MJML components are rendered in real-time using the official compiler, therefore the result is, almost, the same as using the [MJML Live Editor](https://mjml.io/try-it-live).
+> Requires GrapesJS v0.14.62 or higher
+
+This plugin enables the usage of [MJML](https://mjml.io/) components inside the GrapesJS environment. MJML components are rendered in real-time using the official v4 compiler (+ some mocks to make it run in the browser), therefore the result is, almost, the same as using the [MJML Live Editor](https://mjml.io/try-it-live).
 
 
 [Demo](http://grapesjs.com/demo-mjml.html)
@@ -8,7 +10,8 @@ This plugin enables the usage of [MJML](https://mjml.io/) components inside the 
 <br/>
 
 Supported components:
-`mj-container`
+`mj-wrapper`
+`mj-group`
 `mj-section`
 `mj-column`
 `mj-text`
@@ -17,6 +20,8 @@ Supported components:
 `mj-social`
 `mj-divider`
 `mj-spacer`
+`mj-style`
+`mj-font`
 
 
 ## Options
@@ -52,28 +57,47 @@ Supported components:
 <script src="path/to/grapesjs-mjml.min.js"></script>
 
 <div id="gjs">
-  <!-- Your MJML body here -->
-  <mj-container>
-        <mj-section>
-          <mj-column>
-            <mj-text>My Company</mj-text>
-          </mj-column>
-        </mj-section>
-  <mj-container>
+  <mjml>
+    <mj-body>
+      <!-- Your MJML body here -->
+      <mj-section>
+        <mj-column>
+          <mj-text>My Company</mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-body>
+  </mjml>
 </div>
 
 <script type="text/javascript">
   var editor = grapesjs.init({
       fromElement: 1,
       container : '#gjs',
-      plugins: ['gjs-mjml'],
+      plugins: ['grapesjs-mjml'],
       pluginsOpts: {
-        'gjs-mjml': {/* ...options */}
+        'grapesjs-mjml': {/* ...options */}
       }
   });
 </script>
 ```
 
+#### Or using ESM imports:
+
+```js
+import 'grapesjs/dist/css/grapes.min.css'
+import grapesJS from 'grapesjs'
+import grapesJSMJML from 'grapesjs-mjml'
+
+grapesJS.init({
+   fromElement: 1,
+   container : '#gjs',
+   avoidInlineStyle : false,
+   plugins: [grapesJSMJML],
+   pluginsOpts: {
+      [grapesJSMJML]: {/* ...options */}
+   }
+});
+```
 
 
 ## Development
@@ -91,37 +115,12 @@ Install it
 $ npm i
 ```
 
-The plugin relies on GrapesJS via `peerDependencies` so you have to install it manually
-
-```sh
-$ npm i grapesjs --no-save
-```
-
 Start the dev server
 
 ```sh
 $ npm start
 ```
 
-Alternatively, you can clone the grapesjs repository in a different directory, `npm link` it and use that as the grapesjs dependency. This lets you simultaneously run grapesjs-mjml and grapesjs from source.
-
-Install grapesjs and run the webpack watcher in it:
-```sh
-$ git clone https://github.com/artf/grapesjs
-$ cd grapesjs
-$ npm install
-$ npm link
-$ webpack --watch
-```
-
-Install grapesjs-mjml, link the grapesjs repo from above and start the dev server:
-
-```sh
-$ git clone https://github.com/artf/grapesjs-mjml
-$ npm install
-$ npm link grapesjs
-$ npm run
-```
 
 ## License
 

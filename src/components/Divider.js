@@ -1,18 +1,17 @@
 // Specs: https://mjml.io/documentation/#mjml-divider
+import { isComponentType } from './index.js';
 
-export default (editor, {
-  dc, opt, defaultModel, defaultView, coreMjmlModel, coreMjmlView
-}) => {
+export default (editor, { dc, coreMjmlModel, coreMjmlView }) => {
   const type = 'mj-divider';
 
   dc.addType(type, {
+    isComponent: isComponentType(type),
 
-
-    model: defaultModel.extend({ ...coreMjmlModel,
-
-      defaults: { ...defaultModel.prototype.defaults,
-        'custom-name': 'Divider',
-        draggable: '[data-type=mj-column]',
+    model: {
+      ...coreMjmlModel,
+      defaults: {
+        name: 'Divider',
+        draggable: '[data-gjs-type=mj-column]',
         droppable: false,
         'style-default': {
           'width': '100%',
@@ -30,20 +29,11 @@ export default (editor, {
           'border-detached', 'border-width', 'border-style', 'border-color'
         ],
       },
-    },{
+    },
 
-      isComponent(el) {
-        if (el.tagName == type.toUpperCase()) {
-          return { type };
-        }
-      },
-    }),
-
-
-    view: defaultView.extend({ ...coreMjmlView,
-
+    view: {
+      ...coreMjmlView,
       tagName: 'tr',
-
       attributes: {
         style: 'pointer-events: all; display: table; width: 100%; user-select: none;',
       },
@@ -62,6 +52,6 @@ export default (editor, {
       getChildrenSelector() {
         return 'p';
       },
-    }),
+    },
   });
-}
+};

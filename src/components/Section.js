@@ -1,20 +1,18 @@
 // Specs: https://mjml.io/documentation/#mjml-section
+import { isComponentType } from './index.js';
 
-export default (editor, {
-  dc, defaultModel, defaultView, coreMjmlModel, coreMjmlView
-}) => {
+export default (editor, { dc, coreMjmlModel, coreMjmlView }) => {
   const type = 'mj-section';
 
   dc.addType(type, {
+    isComponent: isComponentType(type),
 
-
-    model: defaultModel.extend({ ...coreMjmlModel,
-
+    model: {
+      ...coreMjmlModel,
       defaults: {
-        ...defaultModel.prototype.defaults,
-        'custom-name': 'Section',
-        draggable: '[data-type=mj-body]',
-        droppable: '[data-type=mj-column]',
+        name: 'Section',
+        draggable: '[data-gjs-type=mj-body]',
+        droppable: '[data-gjs-type=mj-column]',
         'style-default': {
           'padding-top': '10px',
           'padding-bottom': '10px',
@@ -29,33 +27,40 @@ export default (editor, {
           'border', 'border-width', 'border-style', 'border-color'
         ],
       },
-    },{
-
-      isComponent(el) {
-        if (el.tagName == type.toUpperCase()) {
-          return { type };
-        }
       },
-    }),
 
-
-    view: defaultView.extend({ ...coreMjmlView,
-
+    view: {
+      ...coreMjmlView,
       tagName: 'div',
-
       attributes: {
         style: 'pointer-events: all;',
         'data-type': 'mj-section',
       },
 
+      getMjmlTemplate() {
+        let parentView = this.model.parent().view;
+        if (parentView.getInnerMjmlTemplate) {
+          let mjmlBody = coreMjmlView.getInnerMjmlTemplate.call(parentView);
+          return {
+            start: `<mjml><mj-body>${mjmlBody.start}`,
+            end: `${mjmlBody.end}</mj-body></mjml>`,
+          };
+        } else {
+          return {
+            start: `<mjml><mj-body>`,
+            end: `</mj-body></mjml>`,
+          };
+        }
+      },
+
       getChildrenSelector() {
-        return 'tbody > tr > td';
+        return 'table > tbody > tr > td';
       },
 
       init() {
         coreMjmlView.init.call(this);
         this.listenTo(this.model.get('components'), 'add remove', this.render);
       },
-    }),
+    },
   });
-}
+};

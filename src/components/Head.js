@@ -1,6 +1,7 @@
 // Specs: https://mjml.io/documentation/#mj-head
+import { isComponentType } from './index.js';
 
-export default (editor, { dc, defaultModel, defaultView }) => {
+export default (editor, { dc }) => {
   const type = 'mj-head';
   const droppable = [
     'mj-preview',
@@ -8,25 +9,17 @@ export default (editor, { dc, defaultModel, defaultView }) => {
     'mj-style',
     'mj-font',
     'mj-title',
-  ].map(tag => `[data-type=${tag}]`).join(', ');
+  ].map(tag => `[data-gjs-type=${tag}]`).join(', ');
 
   dc.addType(type, {
+    isComponent: isComponentType(type),
 
-    model: defaultModel.extend({
+    model: {
       defaults: {
-        ...defaultModel.prototype.defaults,
         droppable,
         draggable: false,
       },
-    },{
-      isComponent(el) {
-        if (el.tagName == type.toUpperCase()) {
-          return { type };
-        }
-      },
-    }),
-
-    view: defaultView,
+    },
   });
 
-}
+};

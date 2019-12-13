@@ -1,18 +1,19 @@
 // Specs: https://mjml.io/documentation/#mjml-button
+import { isComponentType } from './index.js';
 
-export default (editor, {
-  dc, opt, linkModel, linkView, coreMjmlModel, coreMjmlView
-}) => {
+export default (editor, { dc, coreMjmlModel, coreMjmlView }) => {
   const type = 'mj-button';
 
   dc.addType(type, {
+    isComponent: isComponentType(type),
+    extend: 'link',
+    extendFnView: ['onActive', 'disableEditing'],
 
-
-    model: linkModel.extend({ ...coreMjmlModel,
-
-      defaults: { ...linkModel.prototype.defaults,
-        'custom-name': 'Button',
-        draggable: '[data-type=mj-column]',
+    model: {
+      ...coreMjmlModel,
+      defaults: {
+        name: 'Button',
+        draggable: '[data-gjs-type=mj-column]',
         highlightable: false,
         stylable: ['width', 'height',
           'background-color', 'container-background-color',
@@ -37,20 +38,11 @@ export default (editor, {
         traits: ['href'],
         // 'container-background-color', 'inner-padding'
       },
-    },{
+    },
 
-      isComponent(el) {
-        if (el.tagName == type.toUpperCase()) {
-          return { type };
-        }
-      },
-    }),
-
-
-    view: linkView.extend({ ...coreMjmlView,
-
+    view: {
+      ...coreMjmlView,
       tagName: 'tr',
-
       attributes: {
         style: 'pointer-events: all; display: table; width: 100%',
       },
@@ -76,6 +68,17 @@ export default (editor, {
       renderChildren() {
         coreMjmlView.renderChildren.call(this);
       },
-    }),
+
+      /**
+       * Need to make text selectable.
+       */
+      onActive() {
+        this.getChildrenContainer().style.pointerEvents = 'all';
+      },
+
+      disableEditing() {
+        this.getChildrenContainer().style.pointerEvents = 'none';
+      },
+    },
   });
-}
+};

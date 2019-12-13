@@ -1,18 +1,31 @@
 // Specs: https://mjml.io/documentation/#mjml-text
 
-export default (editor, {
-  dc, opt, textModel, textView, coreMjmlModel, coreMjmlView
-}) => {
+export default (editor, { dc, coreMjmlModel, coreMjmlView }) => {
   const type = 'mj-text';
 
   dc.addType(type, {
+    extend: 'text',
+    extendFnView: ['onActive', 'disableEditing'],
 
+    isComponent(el) {
+      if (el.tagName == type.toUpperCase()) {
+        let content = el.innerHTML;
+        if (/<%.*%>/.test(el.innerText)) {
+          content = el.innerText;
+        }
+        return {
+          type,
+          content,
+          components: [],
+        };
+      }
+    },
 
-    model: textModel.extend({ ...coreMjmlModel,
-
-      defaults: { ...textModel.prototype.defaults,
-        'custom-name': 'Text',
-        draggable: '[data-type=mj-column]',
+    model: {
+      ...coreMjmlModel,
+      defaults: {
+        name: 'Text',
+        draggable: '[data-gjs-type=mj-column]',
         highlightable: false,
         stylable: [
           'height', 'font-style', 'font-size', 'font-weight', 'font-family', 'color',
@@ -30,28 +43,11 @@ export default (editor, {
           'align': 'left',
         },
       },
-    },{
+    },
 
-      isComponent(el) {
-        if (el.tagName == type.toUpperCase()) {
-          let content = el.innerHTML
-          if (/<%.*%>/.test(el.innerText)) {
-            content = el.innerText
-          }
-          return {
-            type,
-            content,
-            components: [],
-          };
-        }
-      },
-    }),
-
-
-    view: textView.extend({ ...coreMjmlView,
-
+    view: {
+      ...coreMjmlView,
       tagName: 'tr',
-
       attributes: {
         style: 'pointer-events: all; display: table; width: 100%',
       },
@@ -68,7 +64,7 @@ export default (editor, {
       },
 
       getChildrenSelector() {
-        return 'div';
+        return 'td > div';
       },
 
       /**
@@ -81,15 +77,13 @@ export default (editor, {
       /**
        * Need to make text selectable.
        */
-      enableEditing() {
-        textView.prototype.enableEditing.apply(this, arguments);
+      onActive() {
         this.getChildrenContainer().style.pointerEvents = 'all';
       },
 
       disableEditing() {
-        textView.prototype.disableEditing.apply(this, arguments);
         this.getChildrenContainer().style.pointerEvents = 'none';
       },
-    }),
+    },
   });
-}
+};

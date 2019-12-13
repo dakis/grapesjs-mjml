@@ -1,13 +1,10 @@
 export default (editor, opt = {}) => {
-  let bm = editor.BlockManager;
-
-  if (opt.resetBlocks) {
-    bm.getAll().reset();
-  }
-
+  const bm = editor.BlockManager;
   const allBlocks = {
     category: opt.categoryLabel,
-  }
+  };
+
+  opt.resetBlocks && bm.getAll().reset();
 
   bm.add('mj-1-column', {
     label: '1 Column',
@@ -63,13 +60,24 @@ export default (editor, opt = {}) => {
   bm.add('mj-divider', {
     label: 'Divider',
     content: '<mj-divider/>',
-    attributes: { class: 'gjs-fonts gjs-f-divider'},
+    attributes: { class: 'gjs-fonts gjs-f-divider' },
     ...allBlocks,
   });
 
-  bm.add('mj-social', {
-    label: 'Social',
-    content: '<mj-social/>',
+  bm.add('mj-social-group', {
+    label: 'Group Social',
+    content: `<mj-social font-size="12px" icon-size="24px" border-radius="12px" mode="horizontal">
+        <mj-social-element name="facebook"></mj-social-element>
+        <mj-social-element name="google"></mj-social-element>
+        <mj-social-element name="twitter"></mj-social-element>
+      </mj-social>`,
+    attributes: { class: 'fa fa-share-alt' },
+    ...allBlocks,
+  });
+
+  bm.add('mj-social-element', {
+    label: 'Social Element',
+    content: '<mj-social-element name="facebook" />',
     attributes: { class: 'fa fa-share-alt' },
     ...allBlocks,
   });
@@ -80,4 +88,24 @@ export default (editor, opt = {}) => {
     attributes: { class: 'fa fa-arrows-v' },
     ...allBlocks,
   });
-}
+
+  bm.add('mj-navbar', {
+    label: 'NavBar',
+    content: `<mj-navbar>
+    <mj-navbar-link>Getting started</mj-navbar-link>
+    <mj-navbar-link>Try it live</mj-navbar-link>
+    <mj-navbar-link>Templates</mj-navbar-link>
+    <mj-navbar-link>Components</mj-navbar-link>
+    </mj-navbar>`,
+    attributes: { class: 'fa fa-bars' },
+    ...allBlocks,
+  });
+
+  bm.add('mj-navbar-link', {
+    label: 'NavBar Link',
+    content: `<mj-navbar-link>Link 1</mj-navbar-link>`,
+    attributes: { class: 'gjs-fonts gjs-f-button' },
+    ...allBlocks,
+  });
+
+};

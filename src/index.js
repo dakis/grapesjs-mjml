@@ -1,9 +1,24 @@
-import grapesjs from 'grapesjs';
+import loadBlocks from './blocks';
+import loadComponents from './components';
+import loadCommands from './commands';
+import loadButtons from './buttons';
+import loadStyle from './style';
 
-export default grapesjs.plugins.add('gjs-mjml', (editor, opts = {}) => {
+export default (editor, opt = {}) => {
+  const config = editor.getConfig();
+  const opts = {
+    editor,
+    cmdBtnMoveLabel: 'Move',
+    cmdBtnUndoLabel: 'Undo',
+    cmdBtnRedoLabel: 'Redo',
+    cmdBtnDesktopLabel: 'Desktop',
+    cmdBtnTabletLabel: 'Tablet',
+    cmdBtnMobileLabel: 'Mobile',
 
-  const opt = {
-
+    expTplBtnTitle: 'View Code',
+    fullScrBtnTitle: 'FullScreen',
+    swichtVwBtnTitle: 'View Components',
+    defaultTemplate: '', // Default template in case the canvas is empty
     categoryLabel: '',
 
     // Code viewer theme
@@ -42,19 +57,17 @@ export default grapesjs.plugins.add('gjs-mjml', (editor, opts = {}) => {
     // Clean all previous blocks if true
     resetBlocks: 1,
 
-    // Clean all previous devices and set a new one for mobile
-    resetDevices: 1,
-
     // Reset the Style Manager and add new properties for MJML
     resetStyleManager: 1,
 
     // Column padding (this way it's easier select columns)
     columnsPadding: '10px 0',
 
-    ...opts,
+    ...opt,
   };
 
-  let config = editor.getConfig();
+  // Change some config
+  config.devicePreviewMode = 1;
 
   // I need to prevent forced class creation as classes aren't working
   // at the moment
@@ -63,27 +76,23 @@ export default grapesjs.plugins.add('gjs-mjml', (editor, opts = {}) => {
   // Don't need to create css rules with media
   config.devicePreviewMode = 1;
 
-  // Add Blocks
-  require('./blocks').default(editor, opt);
+  // Doesn't work without inline styling
+  config.avoidInlineStyle = 0;
 
-  // Add Components
-  require('./components').default(editor, opt);
-
-  // Add Commands
-  require('./commands').default(editor, opt);
-
-  // Add Buttons
-  require('./buttons').default(editor, opt);
-
-  // Extend Style Manager
-  require('./style').default(editor, opt);
+  [
+    loadBlocks,
+    loadComponents,
+    loadCommands,
+    loadButtons,
+    loadStyle,
+  ].forEach(module => module(editor, opts));
 
   // Update devices
-  if (opt.resetDevices) {
+  if (opts.resetDevices) {
     const dm = editor.DeviceManager;
     dm.getAll().reset();
     dm.add('Desktop', '');
     dm.add('Mobile', '320px');
+    dm.add('Tablet', '820px');
   }
-
-});
+};

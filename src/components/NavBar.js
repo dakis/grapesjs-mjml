@@ -1,31 +1,49 @@
-// Specs: https://mjml.io/documentation/#mjml-column
 import mjml2html from 'mjml';
-import { isComponentType } from './index.js';
+import { isComponentType } from '.';
 
-export default (editor, { dc, opt, coreMjmlModel, coreMjmlView, sandboxEl }) => {
-  const type = 'mj-column';
-  const clmPadd = opt.columnsPadding;
+export default (editor, { dc, coreMjmlModel, coreMjmlView, sandboxEl }) => {
+  const type = 'mj-navbar';
 
   dc.addType(type, {
     isComponent: isComponentType(type),
     model: {
       ...coreMjmlModel,
       defaults: {
-        name: 'Column',
-        draggable: '[data-gjs-type=mj-section]',
+        name: 'NavBar',
+        draggable: '[data-gjs-type=mj-column]',
+        droppable: '[data-gjs-type=mj-navbar-link]',
+        'style-default': {
+          // TODO
+        },
         stylable: [
-          'background-color', 'vertical-align', 'width',
-          'border-radius', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius',
-          'border', 'border-width', 'border-style', 'border-color',
+          // TODO
+        ],
+        traits: [
+          {
+            type: 'select',
+            label: 'Hamburger',
+            name: 'hamburger',
+            options: [
+              { value: 'hamburger', name: 'ON' },
+              { value: '', name: 'OFF' },
+            ]
+          }
         ],
       },
     },
 
     view: {
       ...coreMjmlView,
-      tagName: 'div',
+
+      tagName: 'tr',
+
       attributes: {
-        style: 'pointer-events: all;' + (clmPadd ? `padding: ${clmPadd};` : ''),
+        style: 'pointer-events: all; display: table; width: 100%',
+      },
+
+      init() {
+        coreMjmlView.init.call(this);
+        this.listenTo(this.model.get('components'), 'add remove', this.render);
       },
 
       getTemplateFromMjml() {
@@ -35,7 +53,7 @@ export default (editor, { dc, opt, coreMjmlModel, coreMjmlView, sandboxEl }) => 
           ${innerMjml.start}${innerMjml.end}${mjmlTmpl.end}`);
         let html = htmlOutput.html;
 
-        // I need styles for responsive columns
+        // I need styles for hamburger
         let styles = [];
         sandboxEl.innerHTML = html;
         var styleArr = Array.from(sandboxEl.querySelectorAll('style'));
@@ -78,28 +96,29 @@ export default (editor, { dc, opt, coreMjmlModel, coreMjmlView, sandboxEl }) => 
         return this;
       },
 
-      renderStyle() {
-        this.el.style = this.el.getAttribute('style') + this.attributes.style;
-      },
-
       getMjmlTemplate() {
-        // Need it for responsive columns
-        let cols = this.model.collection.length - 1;
-        cols = cols ? cols : 0;
-        let addColmn = Array(cols).fill('<mj-column></mj-column>').join('');
-
         return {
-          start: `<mjml><mj-body><mj-section>`,
-          end: `${addColmn}</mj-section></mj-body></mjml>`,
+          start: `<mjml><mj-body><mj-column>`,
+          end: `</mj-column></mj-body></mjml>`,
         };
       },
 
       getTemplateFromEl(sandboxEl) {
-        return sandboxEl.firstChild.querySelector('div > table > tbody > tr > td > div');
+        return sandboxEl.firstChild.querySelector('tr');
       },
 
       getChildrenSelector() {
-        return 'table';
+        return 'div.mj-inline-links';
+      },
+
+      rerender() {
+        coreMjmlView.rerender.call(this);
+        this.model.components().models.forEach((item) => {
+          if (item.attributes.type != "mj-navbar-link") {
+            return;
+          }
+          item.view.rerender();
+        });
       },
     },
   });
