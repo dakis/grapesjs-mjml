@@ -9,7 +9,7 @@ export default (editor, { dc, coreMjmlModel, coreMjmlView }) => {
 
     isComponent(el) {
       if (el.tagName === type.toUpperCase()) {
-        let content = el.innerHTML
+        let content = el.innerHTML;
         if (/<%.*%>/.test(el.innerText)) {
           content = el.innerText;
         }
